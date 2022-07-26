@@ -1,10 +1,9 @@
 use std::{env, fs};
-use std::env::args;
 use std::error::Error;
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(config.filename)?;
-    let result = if &config.ignore_case {
+    let result = if config.ignore_case {
         search(&config.query, &contents)
     } else {
         search_case_sensitive(&config.query, &contents)
@@ -16,17 +15,17 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 }
 
 fn search_case_sensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+    let query = query.to_lowercase();
     contents
         .lines()
-        .filter(|line| line.contains(query))
+        .filter(|line| line.to_lowercase().contains(&query))
         .collect()
 }
 
 fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    let query = query.to_lowercase();
     contents
         .lines()
-        .filter(|line| line.to_lowercase().contains(query))
+        .filter(|line| line.contains(&query))
         .collect()
 }
 
